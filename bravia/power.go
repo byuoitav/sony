@@ -46,7 +46,7 @@ func (t *TV) SetPower(ctx context.Context, power bool) error {
 		ID:      1,
 	}
 
-	t.Log.Info("Setting power to %v", zap.Bool("power", power))
+	t.Log.Info("Setting power to", zap.Bool("power", power))
 
 	_, err := t.PostHTTPWithContext(ctx, "system", payload)
 	if err != nil {
@@ -67,7 +67,7 @@ func (t *TV) SetPower(ctx context.Context, power bool) error {
 				return err
 			}
 
-			t.Log.Info("Waiting for display power to change to %v, current status %s", zap.Bool("target", power), zap.Bool("current", p))
+			t.Log.Info("Waiting for display power to change", zap.Bool("target", power), zap.Bool("current", p))
 
 			switch {
 			case p && power:

@@ -27,11 +27,11 @@ func (t *TV) Blank(ctx context.Context) (bool, error) {
 		ID:      1,
 	}
 
-	t.Log.Info("%+v", zap.Any("payload", payload))
+	t.Log.Info("payload", zap.Any("payload", payload))
 
 	resp, err := t.PostHTTPWithContext(ctx, "system", payload)
 	if err != nil {
-		t.Log.Info("ERROR: %v", zap.String("error", err.Error()))
+		t.Log.Info("ERROR", zap.String("error", err.Error()))
 		return false, err
 	}
 
@@ -75,7 +75,7 @@ func (t *TV) SetBlank(ctx context.Context, blanked bool) error {
 		ID:      1,
 	}
 
-	t.Log.Info("%+v", zap.Any("payload", payload))
+	t.Log.Info("payload", zap.Any("payload", payload))
 
 	resp, err := t.PostHTTPWithContext(ctx, "system", payload)
 	if err != nil {

@@ -12,13 +12,13 @@ import (
 )
 
 func (t *TV) Volumes(ctx context.Context, blocks []string) (map[string]int, error) {
-	t.Log.Info("Getting volume for %v", zap.String("address", t.Address))
+	t.Log.Info("Getting volume", zap.String("address", t.Address))
 	toReturn := make(map[string]int)
 	parentResponse, err := t.getAudioInformation(ctx)
 	if err != nil {
 		return toReturn, err
 	}
-	t.Log.Info("%v", zap.Any("parentResponse", parentResponse))
+	t.Log.Info("volume resp", zap.Any("parentResponse", parentResponse))
 
 	for _, outerResult := range parentResponse.Result {
 
@@ -41,7 +41,7 @@ func (t *TV) SetVolume(ctx context.Context, block string, volume int) error {
 		return errors.New("Error: volume must be a value from 0 to 100!")
 	}
 
-	t.Log.Debug("Setting volume for %s to %v...", zap.String("address", t.Address), zap.Int("volume", volume))
+	t.Log.Debug("Setting volume", zap.Int("volume", volume))
 	params := make(map[string]interface{})
 	params["target"] = "speaker"
 	params["volume"] = strconv.Itoa(volume)
@@ -73,13 +73,13 @@ func (t *TV) getAudioInformation(ctx context.Context) (SonyAudioResponse, error)
 		ID:      1,
 	}
 
-	t.Log.Info("%+v", zap.Any("payload", payload))
+	t.Log.Info("payload", zap.Any("payload", payload))
 
 	resp, err := t.PostHTTPWithContext(ctx, "audio", payload)
 
 	parentResponse := SonyAudioResponse{}
 
-	t.Log.Info("%s", zap.Any("resp", resp))
+	t.Log.Info("audio response", zap.Any("resp", resp))
 
 	err = json.Unmarshal(resp, &parentResponse)
 	return parentResponse, err
@@ -88,7 +88,7 @@ func (t *TV) getAudioInformation(ctx context.Context) (SonyAudioResponse, error)
 
 func (t *TV) Mutes(ctx context.Context, blocks []string) (map[string]bool, error) {
 	toReturn := make(map[string]bool)
-	t.Log.Info("Getting mute status for %v", zap.String("address", t.Address))
+	t.Log.Info("Getting mute status", zap.String("address", t.Address))
 	parentResponse, err := t.getAudioInformation(ctx)
 	if err != nil {
 		return toReturn, err
@@ -97,7 +97,7 @@ func (t *TV) Mutes(ctx context.Context, blocks []string) (map[string]bool, error
 	for _, outerResult := range parentResponse.Result {
 		for _, result := range outerResult {
 			if result.Target == "speaker" {
-				t.Log.Info("local mute: %v", zap.Bool("mute", result.Mute))
+				t.Log.Info("local mute", zap.Bool("mute", result.Mute))
 				toReturn[""] = result.Mute
 			}
 		}

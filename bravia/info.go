@@ -7,7 +7,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/byuoitav/common/log"
+	"go.uber.org/zap"
 )
 
 type NetworkInfo struct {
@@ -61,7 +61,7 @@ func (t *TV) Info(ctx context.Context) (interface{}, error) {
 		DNS:        networkInfo.DNS,
 	}
 
-	log.L.Info(toReturn)
+	t.Log.Info("network info", zap.Any("networkInfo", toReturn))
 
 	// get power status
 	powerStatus, err := t.Power(context.TODO())
