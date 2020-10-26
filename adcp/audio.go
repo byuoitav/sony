@@ -1,4 +1,4 @@
-package commonrest
+package adcp
 
 import (
 	"context"
