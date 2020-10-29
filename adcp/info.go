@@ -3,6 +3,7 @@ package adcp
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -150,4 +151,13 @@ func (p *Projector) Info(ctx context.Context) (interface{}, error) {
 	}
 
 	return info, nil
+}
+
+func (p *Projector) Healthy(ctx context.Context) error {
+	_, err := p.Power(ctx)
+	if err != nil {
+		return fmt.Errorf("failed health check: %s", err)
+	}
+
+	return nil
 }

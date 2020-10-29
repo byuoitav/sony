@@ -122,3 +122,12 @@ func (t *TV) getNetworkInfo(ctx context.Context) (SonyTVNetworkInformation, erro
 
 	return network.Result[0][0], nil
 }
+
+func (t *TV) Healthy(ctx context.Context) error {
+	_, err := t.Power(ctx)
+	if err != nil {
+		return fmt.Errorf("failed health check: %s", err)
+	}
+
+	return nil
+}
