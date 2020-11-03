@@ -9,22 +9,17 @@ import (
 
 // HardwareInfo contains the common information for device hardware information
 type HardwareInfo struct {
-	ModelName     string           `json:"model_name,omitempty"`
-	SerialNumber  string           `json:"serial_number,omitempty"`
-	NetworkInfo   NetworkInfo      `json:"network_information,omitempty"`
-	FilterStatus  string           `json:"filter_status,omitempty"`
-	WarningStatus []string         `json:"warning_status,omitempty"`
-	ErrorStatus   []string         `json:"error_status,omitempty"`
-	PowerStatus   string           `json:"power_status,omitempty"`
-	TimerInfo     []map[string]int `json:"timer_info,omitempty"`
-}
-
-// NetworkInfo contains the network information for the device
-type NetworkInfo struct {
-	IPAddress  string   `json:"ip_address,omitempty"`
-	MACAddress string   `json:"mac_address,omitempty"`
-	Gateway    string   `json:"gateway,omitempty"`
-	DNS        []string `json:"dns,omitempty"`
+	ModelName     string
+	SerialNumber  string
+	FilterStatus  string
+	WarningStatus []string
+	ErrorStatus   []string
+	PowerStatus   string
+	TimerInfo     []map[string]int
+	IPAddress     string
+	MACAddress    string
+	Gateway       string
+	DNS           []string
 }
 
 var (
@@ -60,7 +55,7 @@ func (p *Projector) Info(ctx context.Context) (interface{}, error) {
 		return info, err
 	}
 
-	info.NetworkInfo.IPAddress = strings.Trim(resp, "\"")
+	info.IPAddress = strings.Trim(resp, "\"")
 
 	// gateway
 	resp, err = p.SendCommand(ctx, p.Address, gateway)
@@ -68,7 +63,7 @@ func (p *Projector) Info(ctx context.Context) (interface{}, error) {
 		return info, err
 	}
 
-	info.NetworkInfo.Gateway = strings.Trim(resp, "\"")
+	info.Gateway = strings.Trim(resp, "\"")
 
 	// dns
 	resp, err = p.SendCommand(ctx, p.Address, dns)
@@ -76,14 +71,14 @@ func (p *Projector) Info(ctx context.Context) (interface{}, error) {
 		return info, err
 	}
 
-	info.NetworkInfo.DNS = append(info.NetworkInfo.DNS, strings.Trim(resp, "\""))
+	info.DNS = append(info.DNS, strings.Trim(resp, "\""))
 
 	resp, err = p.SendCommand(ctx, p.Address, dns2)
 	if err != nil {
 		return info, err
 	}
 
-	info.NetworkInfo.DNS = append(info.NetworkInfo.DNS, strings.Trim(resp, "\""))
+	info.DNS = append(info.DNS, strings.Trim(resp, "\""))
 
 	// mac address
 	resp, err = p.SendCommand(ctx, p.Address, macAddr)
@@ -91,7 +86,7 @@ func (p *Projector) Info(ctx context.Context) (interface{}, error) {
 		return info, err
 	}
 
-	info.NetworkInfo.MACAddress = strings.Trim(resp, "\"")
+	info.MACAddress = strings.Trim(resp, "\"")
 
 	// serial number
 	resp, err = p.SendCommand(ctx, p.Address, serialNum)
