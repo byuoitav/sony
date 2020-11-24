@@ -13,10 +13,10 @@ var (
 	PowerOn = []byte("power \"on\"\r\n")
 
 	// PowerStandby powers off the projector
-	PowerStandby = []byte("power \"standby\"\r\n")
+	PowerStandby = []byte("power \"off\"\r\n")
 )
 
-// GetPower returns the status of the projector
+// Power returns the status of the projector
 func (p *Projector) Power(ctx context.Context) (bool, error) {
 	state := false
 
@@ -24,12 +24,13 @@ func (p *Projector) Power(ctx context.Context) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	switch resp {
-	case `"standby"`:
 	case `"startup"`:
 		state = true
 	case `"on"`:
 		state = true
+	case `"standby"`:
 	case `"cooling1"`:
 	case `"cooling2"`:
 	case `"saving_cooling1"`:
@@ -44,16 +45,15 @@ func (p *Projector) Power(ctx context.Context) (bool, error) {
 
 // SetPower sets the status of the projector
 func (p *Projector) SetPower(ctx context.Context, power bool) error {
-	var cmd []byte
-	switch {
-	case power:
-		cmd = PowerOn
-	case !power:
+	cmd := PowerOn
+	if !power {
 		cmd = PowerStandby
-	default:
-		return fmt.Errorf("unable to set power state to %q: must be %q or %q", power, "on", "standby")
 	}
 
-	_, err := p.SendCommand(ctx, p.Address, cmd)
-	return err
+	resp, err := p.SendCommand(ctx, p.Address, cmd)
+	if err != nil {
+		return err
+	}
+
+	return ResponseError(resp)
 }

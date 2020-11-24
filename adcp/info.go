@@ -32,7 +32,7 @@ var (
 	macAddr     = []byte("mac_address ?\r\n")
 	filter      = []byte("filter_status ?\r\n")
 	warnings    = []byte("warning ?\r\n")
-	errors      = []byte("error ?\r\n")
+	cmdErrors   = []byte("error ?\r\n")
 	powerStatus = []byte("power_status ?\r\n")
 	timer       = []byte("timer ?\r\n")
 )
@@ -124,7 +124,7 @@ func (p *Projector) Info(ctx context.Context) (interface{}, error) {
 	}
 
 	// errors
-	resp, err = p.SendCommand(ctx, p.Address, errors)
+	resp, err = p.SendCommand(ctx, p.Address, cmdErrors)
 	if err != nil {
 		return info, err
 	}
