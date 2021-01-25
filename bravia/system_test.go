@@ -2,6 +2,7 @@ package bravia
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -9,9 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	_preSharedKey = "1234"
-)
+var _preSharedKey = os.Getenv("BRAVIA_PSK")
 
 // TestPower turns the tv on and then off, verifying that
 // it works after each step.

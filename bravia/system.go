@@ -51,7 +51,7 @@ func (d *Display) SetPower(ctx context.Context, power bool) error {
 	}
 
 	// wait for display to turn on
-	ticker := time.NewTicker(256 * time.Millisecond)
+	ticker := time.NewTicker(500 * time.Millisecond)
 	defer ticker.Stop()
 
 	for {
