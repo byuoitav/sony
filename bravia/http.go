@@ -1,15 +1,5 @@
 package bravia
 
-import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-)
-
 //SonyAudioResponse is the parent struct returned when we query audio state
 type SonyAudioResponse struct {
 	Result [][]SonyAudioSettings `json:"result"`
@@ -84,42 +74,8 @@ type SonyTVNetworkInformation struct {
 	DNS              []string `json:"dns"`
 }
 
-func (t *TV) PostHTTPWithContext(ctx context.Context, service string, payload SonyTVRequest) ([]byte, error) {
-	reqBody, err := json.Marshal(payload)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	addr := fmt.Sprintf("http://%s/sony/%s", t.Address, service)
-
-	req, err := http.NewRequestWithContext(ctx, "POST", addr, bytes.NewBuffer(reqBody))
-	if err != nil {
-		return []byte{}, err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Auth-PSK", t.PSK)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return []byte{}, err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	switch {
-	case err != nil:
-		return []byte{}, err
-	case resp.StatusCode != http.StatusOK:
-		return []byte{}, errors.New(string(body))
-	case body == nil:
-		return []byte{}, errors.New("Response from device was blank")
-	}
-
-	return body, nil
-}
-
-func (t *TV) BuildAndSendPayload(ctx context.Context, address string, service string, method string, params map[string]interface{}) error {
+/*
+func (t *Display) BuildAndSendPayload(ctx context.Context, address string, service string, method string, params map[string]interface{}) error {
 	payload := SonyTVRequest{
 		Params:  []map[string]interface{}{params},
 		Method:  method,
@@ -128,7 +84,7 @@ func (t *TV) BuildAndSendPayload(ctx context.Context, address string, service st
 	}
 
 	_, err := t.PostHTTPWithContext(ctx, service, payload)
-
 	return err
 
 }
+*/

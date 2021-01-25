@@ -1,13 +1,6 @@
 package bravia
 
-import (
-	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
-
-	"go.uber.org/zap"
-)
+/*
 
 type SonyBaseResult struct {
 	ID     int                 `json:"id"`
@@ -16,8 +9,7 @@ type SonyBaseResult struct {
 }
 
 //Blank gets the blanked status
-func (t *TV) Blank(ctx context.Context) (bool, error) {
-
+func (t *Display) Blank(ctx context.Context) (bool, error) {
 	var blanked bool
 
 	payload := SonyTVRequest{
@@ -27,7 +19,7 @@ func (t *TV) Blank(ctx context.Context) (bool, error) {
 		ID:      1,
 	}
 
-	t.Log.Info("payload", zap.Any("payload", payload))
+	t.Log.Debug("Sending payloadf", zap.Any("payload", payload))
 
 	resp, err := t.PostHTTPWithContext(ctx, "system", payload)
 	if err != nil {
@@ -57,7 +49,7 @@ func (t *TV) Blank(ctx context.Context) (bool, error) {
 	return blanked, nil
 }
 
-func (t *TV) SetBlank(ctx context.Context, blanked bool) error {
+func (t *Display) SetBlank(ctx context.Context, blanked bool) error {
 	var blankcmd string
 	if blanked == true {
 		blankcmd = "pictureOff"
@@ -96,3 +88,4 @@ func (t *TV) SetBlank(ctx context.Context, blanked bool) error {
 
 	return nil
 }
+*/

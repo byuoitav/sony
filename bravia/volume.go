@@ -1,17 +1,8 @@
 package bravia
 
-import (
-	"context"
-	"errors"
-	"strconv"
-	"time"
+/*
 
-	"encoding/json"
-
-	"go.uber.org/zap"
-)
-
-func (t *TV) Volumes(ctx context.Context, blocks []string) (map[string]int, error) {
+func (t *Display) Volumes(ctx context.Context, blocks []string) (map[string]int, error) {
 	t.Log.Info("Getting volume", zap.String("address", t.Address))
 	toReturn := make(map[string]int)
 	parentResponse, err := t.getAudioInformation(ctx)
@@ -35,7 +26,7 @@ func (t *TV) Volumes(ctx context.Context, blocks []string) (map[string]int, erro
 	return toReturn, nil
 }
 
-func (t *TV) SetVolume(ctx context.Context, block string, volume int) error {
+func (t *Display) SetVolume(ctx context.Context, block string, volume int) error {
 
 	if volume > 100 || volume < 0 {
 		return errors.New("Error: volume must be a value from 0 to 100!")
@@ -65,7 +56,7 @@ func (t *TV) SetVolume(ctx context.Context, block string, volume int) error {
 	return nil
 }
 
-func (t *TV) getAudioInformation(ctx context.Context) (SonyAudioResponse, error) {
+func (t *Display) getAudioInformation(ctx context.Context) (SonyAudioResponse, error) {
 	payload := SonyTVRequest{
 		Params:  []map[string]interface{}{},
 		Method:  "getVolumeInformation",
@@ -86,7 +77,7 @@ func (t *TV) getAudioInformation(ctx context.Context) (SonyAudioResponse, error)
 
 }
 
-func (t *TV) Mutes(ctx context.Context, blocks []string) (map[string]bool, error) {
+func (t *Display) Mutes(ctx context.Context, blocks []string) (map[string]bool, error) {
 	toReturn := make(map[string]bool)
 	t.Log.Info("Getting mute status", zap.String("address", t.Address))
 	parentResponse, err := t.getAudioInformation(ctx)
@@ -108,7 +99,7 @@ func (t *TV) Mutes(ctx context.Context, blocks []string) (map[string]bool, error
 	return toReturn, nil
 }
 
-func (t *TV) SetMute(ctx context.Context, block string, mute bool) error {
+func (t *Display) SetMute(ctx context.Context, block string, mute bool) error {
 	params := make(map[string]interface{})
 	params["status"] = mute
 
@@ -132,3 +123,4 @@ func (t *TV) SetMute(ctx context.Context, block string, mute bool) error {
 
 	return nil
 }
+*/

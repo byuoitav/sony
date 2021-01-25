@@ -2,79 +2,70 @@ package bravia
 
 import (
 	"context"
-	"errors"
-	"strings"
+	"fmt"
 	"time"
-
-	"go.uber.org/zap"
 )
 
-func (t *TV) Power(ctx context.Context) (bool, error) {
-	var output bool
-
-	payload := SonyTVRequest{
-		Params: []map[string]interface{}{},
-		Method: "getPowerStatus", Version: "1.0",
-		ID: 1,
+func (d *Display) Power(ctx context.Context) (bool, error) {
+	req := request{
+		Version: "1.0",
+		Method:  "getPowerStatus",
+		Params:  []map[string]interface{}{},
 	}
 
-	response, err := t.PostHTTPWithContext(ctx, "system", payload)
-	if err != nil {
+	res, err := d.doRequest(ctx, "system", req)
+	switch {
+	case err != nil:
 		return false, err
+	case len(res) < 1:
+		return false, fmt.Errorf("unexpected response: %+v", res)
 	}
 
-	powerStatus := string(response)
-	if strings.Contains(powerStatus, "active") {
-		output = true
-	} else if strings.Contains(powerStatus, "standby") {
-		output = false
-	} else {
-		return false, errors.New("Error getting power status")
+	m, ok := res[0].(map[string]interface{})
+	if !ok {
+		return false, fmt.Errorf("unexpected response: %+v", res)
 	}
 
-	return output, nil
+	str, ok := m["status"].(string)
+	if !ok {
+		return false, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	return str == "active", nil
 }
 
-func (t *TV) SetPower(ctx context.Context, power bool) error {
-	params := make(map[string]interface{})
-	params["status"] = power
-
-	payload := SonyTVRequest{
-		Params:  []map[string]interface{}{params},
-		Method:  "setPowerStatus",
+func (d *Display) SetPower(ctx context.Context, power bool) error {
+	req := request{
 		Version: "1.0",
-		ID:      1,
+		Method:  "setPowerStatus",
+		Params: []map[string]interface{}{
+			{
+				"status": power,
+			},
+		},
 	}
 
-	t.Log.Info("Setting power to", zap.Bool("power", power))
-
-	_, err := t.PostHTTPWithContext(ctx, "system", payload)
+	_, err := d.doRequest(ctx, "system", req)
 	if err != nil {
 		return err
 	}
 
-	// wait for the display to turn on
+	// wait for display to turn on
 	ticker := time.NewTicker(256 * time.Millisecond)
 	defer ticker.Stop()
 
 	for {
 		select {
-		case <-ctx.Done():
-			return errors.New("context timed out while waiting for display to turn on")
 		case <-ticker.C:
-			p, err := t.Power(ctx)
-			if err != nil {
-				return err
-			}
-
-			t.Log.Info("Waiting for display power to change", zap.Bool("target", power), zap.Bool("current", p))
-
+			pow, err := d.Power(ctx)
 			switch {
-			case p && power:
-				return nil
-			case !p && !power:
+			case err != nil:
+				return fmt.Errorf("unable to confirm power set: %w", err)
+			case pow == power:
 				return nil
 			}
+		case <-ctx.Done():
+			return fmt.Errorf("unable to confirm power set: %w", ctx.Err())
 		}
 	}
 }

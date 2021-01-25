@@ -1,15 +1,6 @@
 package bravia
 
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"net"
-	"strings"
-
-	"go.uber.org/zap"
-)
-
+/*
 type NetworkInfo struct {
 	IPAddress  string
 	MACAddress string
@@ -27,7 +18,7 @@ type Info struct {
 }
 
 // Info returns the hardware information for the device
-func (t *TV) Info(ctx context.Context) (interface{}, error) {
+func (t *Display) Info(ctx context.Context) (interface{}, error) {
 	var toReturn Info
 
 	// get the hostname
@@ -74,7 +65,7 @@ func (t *TV) Info(ctx context.Context) (interface{}, error) {
 	return toReturn, nil
 }
 
-func (t *TV) getSystemInfo(ctx context.Context) (SonySystemInformation, error) {
+func (t *Display) getSystemInfo(ctx context.Context) (SonySystemInformation, error) {
 	var system SonyTVSystemResponse
 
 	payload := SonyTVRequest{
@@ -96,7 +87,7 @@ func (t *TV) getSystemInfo(ctx context.Context) (SonySystemInformation, error) {
 	return system.Result[0], nil
 }
 
-func (t *TV) getNetworkInfo(ctx context.Context) (SonyTVNetworkInformation, error) {
+func (t *Display) getNetworkInfo(ctx context.Context) (SonyTVNetworkInformation, error) {
 	var network SonyNetworkResponse
 
 	payload := SonyTVRequest{
@@ -123,7 +114,7 @@ func (t *TV) getNetworkInfo(ctx context.Context) (SonyTVNetworkInformation, erro
 	return network.Result[0][0], nil
 }
 
-func (t *TV) Healthy(ctx context.Context) error {
+func (t *Display) Healthy(ctx context.Context) error {
 	_, err := t.Power(ctx)
 	if err != nil {
 		return fmt.Errorf("failed health check: %s", err)
@@ -131,3 +122,4 @@ func (t *TV) Healthy(ctx context.Context) error {
 
 	return nil
 }
+*/
