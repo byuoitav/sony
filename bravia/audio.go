@@ -75,16 +75,15 @@ func (d *Display) Mutes(ctx context.Context, blocks []string) (map[string]bool, 
 	return mutes, nil
 }
 
-/*
-func (d *Display) SetMute(ctx context.Context, block string, vol int) error {
+// SetMute sets mute on all blocks, not just the given block. The bravia API does not
+// currently support setting mute on a specific block.
+func (d *Display) SetMute(ctx context.Context, block string, mute bool) error {
 	req := request{
-		Version: "1.2",
-		Method:  "setAudioVolume",
+		Version: "1.0",
+		Method:  "setAudioMute",
 		Params: []map[string]interface{}{
 			{
-				"target": block,
-				"volume": strconv.Itoa(vol),
-				"ui":     "off",
+				"status": mute,
 			},
 		},
 	}
@@ -92,7 +91,6 @@ func (d *Display) SetMute(ctx context.Context, block string, vol int) error {
 	_, err := d.doRequest(ctx, "audio", req)
 	return err
 }
-*/
 
 type volumeInformation struct {
 	Target    string `json:"target"`

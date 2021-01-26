@@ -63,3 +63,34 @@ func TestVolume(t *testing.T) {
 
 	is.NoErr(d.SetPower(ctx, false))
 }
+
+func TestMute(t *testing.T) {
+	is := is.New(t)
+
+	d := &Display{
+		Address:      "ITB-2033-D1.byu.edu",
+		PreSharedKey: _preSharedKey,
+		Log:          zap.NewExample(),
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	test := func(muted bool) {
+		is.NoErr(d.SetMute(ctx, "speaker", muted))
+
+		mutes, err := d.Mutes(ctx, []string{"speaker"})
+		is.NoErr(err)
+
+		m, ok := mutes["speaker"]
+		is.True(ok)
+		is.True(m == muted)
+	}
+
+	is.NoErr(d.SetPower(ctx, true))
+
+	test(true)
+	test(false)
+
+	is.NoErr(d.SetPower(ctx, false))
+}
