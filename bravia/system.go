@@ -69,3 +69,72 @@ func (d *Display) SetPower(ctx context.Context, power bool) error {
 		}
 	}
 }
+
+func (d *Display) Blank(ctx context.Context) (bool, error) {
+	req := request{
+		Version: "1.0",
+		Method:  "getPowerSavingMode",
+		Params:  []map[string]interface{}{},
+	}
+
+	res, err := d.doRequest(ctx, "system", req)
+	switch {
+	case err != nil:
+		return false, err
+	case len(res) < 1:
+		return false, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	m, ok := res[0].(map[string]interface{})
+	if !ok {
+		return false, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	str, ok := m["mode"].(string)
+	if !ok {
+		return false, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	return str == "pictureOff", nil
+}
+
+func (d *Display) SetBlank(ctx context.Context, blanked bool) error {
+	state := "off"
+	if blanked {
+		state = "pictureOff"
+	}
+
+	req := request{
+		Version: "1.0",
+		Method:  "setPowerSavingMode",
+		Params: []map[string]interface{}{
+			{
+				"mode": state,
+			},
+		},
+	}
+
+	_, err := d.doRequest(ctx, "system", req)
+	if err != nil {
+		return err
+	}
+
+	// wait for display to blank
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			b, err := d.Blank(ctx)
+			switch {
+			case err != nil:
+				return fmt.Errorf("unable to confirm blank set: %w", err)
+			case b == blanked:
+				return nil
+			}
+		case <-ctx.Done():
+			return fmt.Errorf("unable to confirm blank set: %w", ctx.Err())
+		}
+	}
+}

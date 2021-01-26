@@ -38,3 +38,31 @@ func TestPower(t *testing.T) {
 	is.NoErr(err)
 	is.True(!pow)
 }
+
+func TestBlank(t *testing.T) {
+	is := is.New(t)
+
+	d := &Display{
+		Address:      "ITB-2033-D1.byu.edu",
+		PreSharedKey: _preSharedKey,
+		Log:          zap.NewExample(),
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	is.NoErr(d.SetPower(ctx, true))
+	is.NoErr(d.SetBlank(ctx, true))
+
+	blanked, err := d.Blank(ctx)
+	is.NoErr(err)
+	is.True(blanked)
+
+	is.NoErr(d.SetBlank(ctx, false))
+
+	blanked, err = d.Blank(ctx)
+	is.NoErr(err)
+	is.True(!blanked)
+
+	is.NoErr(d.SetPower(ctx, false))
+}
