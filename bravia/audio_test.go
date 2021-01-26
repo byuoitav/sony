@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/matryer/is"
-	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest"
 )
 
 func TestVolumeInformation(t *testing.T) {
@@ -17,7 +17,7 @@ func TestVolumeInformation(t *testing.T) {
 	d := &Display{
 		Address:      "ITB-2033-D1.byu.edu",
 		PreSharedKey: _preSharedKey,
-		Log:          zap.NewExample(),
+		Log:          zaptest.NewLogger(t),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -41,7 +41,7 @@ func TestVolume(t *testing.T) {
 	d := &Display{
 		Address:      "ITB-2033-D1.byu.edu",
 		PreSharedKey: _preSharedKey,
-		Log:          zap.NewExample(),
+		Log:          zaptest.NewLogger(t),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -70,7 +70,7 @@ func TestMute(t *testing.T) {
 	d := &Display{
 		Address:      "ITB-2033-D1.byu.edu",
 		PreSharedKey: _preSharedKey,
-		Log:          zap.NewExample(),
+		Log:          zaptest.NewLogger(t),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

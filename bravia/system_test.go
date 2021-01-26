@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/matryer/is"
-	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest"
 )
 
 var _preSharedKey = os.Getenv("BRAVIA_PSK")
@@ -20,7 +20,7 @@ func TestPower(t *testing.T) {
 	d := &Display{
 		Address:      "ITB-2033-D1.byu.edu",
 		PreSharedKey: _preSharedKey,
-		Log:          zap.NewExample(),
+		Log:          zaptest.NewLogger(t),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -45,7 +45,7 @@ func TestBlank(t *testing.T) {
 	d := &Display{
 		Address:      "ITB-2033-D1.byu.edu",
 		PreSharedKey: _preSharedKey,
-		Log:          zap.NewExample(),
+		Log:          zaptest.NewLogger(t),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)

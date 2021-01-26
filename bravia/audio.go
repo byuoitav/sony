@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 func (d *Display) Volumes(ctx context.Context, blocks []string) (map[string]int, error) {
@@ -89,7 +90,28 @@ func (d *Display) SetMute(ctx context.Context, block string, mute bool) error {
 	}
 
 	_, err := d.doRequest(ctx, "audio", req)
-	return err
+	if err != nil {
+		return err
+	}
+
+	// wait for display to mute
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			mutes, err := d.Mutes(ctx, []string{block})
+			switch {
+			case err != nil:
+				return fmt.Errorf("unable to confirm mute set: %w", err)
+			case mutes[block] == mute:
+				return nil
+			}
+		case <-ctx.Done():
+			return fmt.Errorf("unable to confirm mute set: %w", ctx.Err())
+		}
+	}
 }
 
 type volumeInformation struct {
