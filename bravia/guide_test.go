@@ -11,16 +11,11 @@ import (
 
 func TestSupportedAPIInfo(t *testing.T) {
 	is := is.New(t)
-
-	d := &Display{
-		Address:      "ITB-2033-D1.byu.edu",
-		PreSharedKey: _preSharedKey,
-		Log:          zaptest.NewLogger(t),
-	}
+	disp.Log = zaptest.NewLogger(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := d.getSupportedAPIInfo(ctx)
+	err := disp.getSupportedAPIInfo(ctx)
 	is.NoErr(err)
 }

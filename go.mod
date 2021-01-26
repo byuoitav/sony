@@ -10,4 +10,5 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/matryer/is v1.4.0
 	go.uber.org/zap v1.16.0
+	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 )

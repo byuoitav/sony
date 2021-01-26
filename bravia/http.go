@@ -73,18 +73,3 @@ type SonyTVNetworkInformation struct {
 	Gateway          string   `json:"gateway"`
 	DNS              []string `json:"dns"`
 }
-
-/*
-func (t *Display) BuildAndSendPayload(ctx context.Context, address string, service string, method string, params map[string]interface{}) error {
-	payload := SonyTVRequest{
-		Params:  []map[string]interface{}{params},
-		Method:  method,
-		Version: "1.0",
-		ID:      1,
-	}
-
-	_, err := t.PostHTTPWithContext(ctx, service, payload)
-	return err
-
-}
-*/

@@ -7,8 +7,11 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"sync"
+	"time"
 
 	"go.uber.org/zap"
+	"golang.org/x/time/rate"
 )
 
 const (
@@ -19,6 +22,15 @@ type Display struct {
 	Address      string
 	PreSharedKey string
 	Log          *zap.Logger
+
+	RequestDelay time.Duration
+
+	once    sync.Once
+	limiter *rate.Limiter
+}
+
+func (d *Display) init() {
+	d.limiter = rate.NewLimiter(rate.Every(d.RequestDelay), 1)
 }
 
 type request struct {
@@ -62,6 +74,8 @@ func (r *response) ErrorReason() string {
 }
 
 func (d *Display) doRequest(ctx context.Context, service string, req request) ([]interface{}, error) {
+	d.once.Do(d.init)
+
 	wrapped := struct {
 		request
 		ID int `json:"id"`
@@ -84,6 +98,10 @@ func (d *Display) doRequest(ctx context.Context, service string, req request) ([
 
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("X-Auth-PSK", d.PreSharedKey)
+
+	if err := d.limiter.Wait(ctx); err != nil {
+		return nil, fmt.Errorf("unable to wait for ratelimit: %w", err)
+	}
 
 	d.Log.Debug("Doing request", zap.String("url", httpReq.URL.String()), zap.ByteString("body", body))
 
