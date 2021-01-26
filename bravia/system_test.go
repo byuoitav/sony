@@ -53,3 +53,17 @@ func TestBlank(t *testing.T) {
 
 	is.NoErr(disp.SetPower(ctx, false))
 }
+
+func TestInfo(t *testing.T) {
+	is := is.New(t)
+	disp.Log = zaptest.NewLogger(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	info, err := disp.Info(ctx)
+	is.NoErr(err)
+	is.True(info != nil)
+
+	t.Logf("%+v", info)
+}

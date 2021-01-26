@@ -138,3 +138,73 @@ func (d *Display) SetBlank(ctx context.Context, blanked bool) error {
 		}
 	}
 }
+
+type Info struct {
+	Product    string `json:"product"`
+	Language   string `json:"language"`
+	Model      string `json:"model"`
+	Serial     string `json:"serial"`
+	MACAddress string `json:"macAddr"`
+	Name       string `json:"name"`
+	Generation string `json:"generation"`
+}
+
+func (d *Display) Info(ctx context.Context) (interface{}, error) {
+	req := request{
+		Version: "1.0",
+		Method:  "getSystemInformation",
+		Params:  []map[string]interface{}{},
+	}
+
+	res, err := d.doRequest(ctx, "system", req)
+	switch {
+	case err != nil:
+		return nil, err
+	case len(res) < 1:
+		return nil, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	m, ok := res[0].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	var info Info
+
+	info.Product, ok = m["product"].(string)
+	if !ok {
+		return info, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	info.Language, ok = m["language"].(string)
+	if !ok {
+		return info, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	info.Model, ok = m["model"].(string)
+	if !ok {
+		return info, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	info.Serial, ok = m["serial"].(string)
+	if !ok {
+		return info, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	info.MACAddress, ok = m["macAddr"].(string)
+	if !ok {
+		return info, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	info.Name, ok = m["name"].(string)
+	if !ok {
+		return info, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	info.Generation, ok = m["generation"].(string)
+	if !ok {
+		return info, fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	return info, nil
+}
