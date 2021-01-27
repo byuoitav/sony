@@ -2,6 +2,7 @@ package bravia
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -10,6 +11,14 @@ import (
 func (d *Display) Volumes(ctx context.Context, blocks []string) (map[string]int, error) {
 	infos, err := d.getVolumeInformation(ctx)
 	if err != nil {
+		var bErr *Error
+		if errors.As(err, &bErr) {
+			switch bErr.code {
+			case _displayOff:
+				return nil, nil
+			}
+		}
+
 		return nil, err
 	}
 
@@ -53,6 +62,14 @@ func (d *Display) SetVolume(ctx context.Context, block string, vol int) error {
 func (d *Display) Mutes(ctx context.Context, blocks []string) (map[string]bool, error) {
 	infos, err := d.getVolumeInformation(ctx)
 	if err != nil {
+		var bErr *Error
+		if errors.As(err, &bErr) {
+			switch bErr.code {
+			case _displayOff:
+				return nil, nil
+			}
+		}
+
 		return nil, err
 	}
 

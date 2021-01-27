@@ -78,3 +78,31 @@ func TestMute(t *testing.T) {
 
 	is.NoErr(disp.SetPower(ctx, false))
 }
+
+func TestOffVolumes(t *testing.T) {
+	is := is.New(t)
+	disp.Log = zaptest.NewLogger(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	is.NoErr(disp.SetPower(ctx, false))
+
+	vols, err := disp.Volumes(ctx, []string{"speaker"})
+	is.NoErr(err)
+	is.True(len(vols) == 0)
+}
+
+func TestOffMutes(t *testing.T) {
+	is := is.New(t)
+	disp.Log = zaptest.NewLogger(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	is.NoErr(disp.SetPower(ctx, false))
+
+	mutes, err := disp.Mutes(ctx, []string{"speaker"})
+	is.NoErr(err)
+	is.True(len(mutes) == 0)
+}

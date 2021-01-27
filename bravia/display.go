@@ -45,32 +45,33 @@ type response struct {
 	Error  []interface{} `json:"error"`
 }
 
-func (r *response) ErrorCode() (int, bool) {
-	if len(r.Error) < 1 {
-		return 0, false
+func (r *response) BuildError() error {
+	if len(r.Error) == 0 {
+		return nil
 	}
 
-	// status code is the first item in the list
+	err := &Error{
+		code:   -1,
+		reason: fmt.Sprintf("unable to parse error %+v", r.Error),
+	}
+
 	code, ok := r.Error[0].(float64)
 	if !ok {
-		return 0, false
+		return err
 	}
+	err.code = int(code)
 
-	return int(code), true
-}
-
-func (r *response) ErrorReason() string {
 	if len(r.Error) < 2 {
-		return ""
+		return err
 	}
 
-	// reason is the second item in the list
 	reason, ok := r.Error[1].(string)
 	if !ok {
-		return ""
+		return err
 	}
+	err.reason = reason
 
-	return reason
+	return err
 }
 
 func (d *Display) doRequest(ctx context.Context, service string, req request) ([]interface{}, error) {
@@ -118,12 +119,12 @@ func (d *Display) doRequest(ctx context.Context, service string, req request) ([
 
 	d.Log.Debug("Response", zap.Any("resp", response))
 
-	if code, ok := response.ErrorCode(); ok {
-		return nil, fmt.Errorf("code %v: %s", code, response.ErrorReason())
-	}
-
 	if wrapped.ID != response.ID {
 		return nil, fmt.Errorf("incorrect response id")
+	}
+
+	if err := response.BuildError(); err != nil {
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusOK {

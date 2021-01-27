@@ -2,6 +2,7 @@ package bravia
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -17,6 +18,14 @@ func (d *Display) AudioVideoInputs(ctx context.Context) (map[string]string, erro
 	res, err := d.doRequest(ctx, "avContent", req)
 	switch {
 	case err != nil:
+		var bErr *Error
+		if errors.As(err, &bErr) {
+			switch bErr.code {
+			case _displayOff:
+				return nil, nil
+			}
+		}
+
 		return nil, err
 	case len(res) < 1:
 		return nil, fmt.Errorf("unexpected response: %+v", res)

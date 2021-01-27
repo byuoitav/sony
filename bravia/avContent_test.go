@@ -56,3 +56,17 @@ func TestCurrentExternalInputsStatus(t *testing.T) {
 		t.Logf("%+v", item)
 	}
 }
+
+func TestOffInputs(t *testing.T) {
+	is := is.New(t)
+	disp.Log = zaptest.NewLogger(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	is.NoErr(disp.SetPower(ctx, false))
+
+	inputs, err := disp.AudioVideoInputs(ctx)
+	is.NoErr(err)
+	is.True(len(inputs) == 0)
+}
