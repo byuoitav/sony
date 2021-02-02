@@ -208,3 +208,12 @@ func (d *Display) Info(ctx context.Context) (interface{}, error) {
 
 	return info, nil
 }
+
+func (d *Display) Healthy(ctx context.Context) error {
+	_, err := d.Power(ctx)
+	if err != nil {
+		return fmt.Errorf("failed health check: %s", err)
+	}
+
+	return nil
+}
