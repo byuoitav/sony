@@ -67,3 +67,14 @@ func TestInfo(t *testing.T) {
 
 	t.Logf("%+v", info)
 }
+
+func TestHealth(t *testing.T) {
+	is := is.New(t)
+	disp.Log = zaptest.NewLogger(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := disp.Healthy(ctx)
+	is.NoErr(err)
+}
