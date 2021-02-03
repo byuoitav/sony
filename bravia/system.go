@@ -210,10 +210,81 @@ func (d *Display) Info(ctx context.Context) (interface{}, error) {
 }
 
 func (d *Display) Healthy(ctx context.Context) error {
-	_, err := d.Power(ctx)
-	if err != nil {
-		return fmt.Errorf("failed health check: %s", err)
+	//get list of supported apis and check to see if the newer api is supported
+
+	req := request{
+		Version: "1.0",
+		Method:  "getSupportedApiInfo",
+		Params: []map[string]interface{}{
+			{
+				"services": nil,
+			},
+		},
 	}
 
-	return nil
+	found := false
+	done := false
+
+	res, err := d.doRequest(ctx, "guide", req)
+	switch {
+	case err != nil:
+		return err
+	case len(res) < 1:
+		return fmt.Errorf("unexpected response: %+v", res)
+	}
+
+	list := res[0].([]interface{})
+
+	for _, item := range list {
+		if done {
+			break
+		}
+
+		tmp, ok := item.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		apis, ok := tmp["apis"].([]interface{})
+		if !ok {
+			continue
+		}
+
+		for _, api := range apis {
+			if done {
+				break
+			}
+			a, ok := api.(map[string]interface{})
+			if !ok {
+				continue
+			}
+
+			if a["name"] == "setAudioVolume" {
+				versions, ok := a["versions"].([]interface{})
+				if !ok {
+					return fmt.Errorf("unable to convert setAudioVolume versions")
+				}
+
+				for _, version := range versions {
+					v, ok := version.(map[string]interface{})
+					if !ok {
+						fmt.Errorf("unable to convert setAudioVolume version")
+					}
+
+					if v["version"] == "1.2" {
+						found = true
+					}
+				}
+
+				done = true
+				break
+			}
+		}
+	}
+
+	if found {
+		return nil
+	}
+
+	return fmt.Errorf("unsupported api")
 }
